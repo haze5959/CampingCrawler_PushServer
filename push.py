@@ -2,7 +2,7 @@ import schedule
 import time 
 import datetime
 import redis
-import accountInfo
+from redisAccount import accountInfo
 import fcmInfo
 import urllib3
 from pyfcm import FCMNotification
@@ -29,6 +29,8 @@ push_service = FCMNotification(api_key=fcmInfo["api_key"])
 # - 하루만 휴가내면 가능해요!
 # 조건: 금 또는 일만 자리가 났을때
 
+# 금토일 이외에는 알림없음!
+
 
 # * 지역별
 # 이번주것만 나타남
@@ -51,11 +53,18 @@ def job_push_camp_avail_date():
         currentTime = datetime.datetime.now()
         print("[{camp}] Crawling Time: {time}".format(camp=camp_munsoo_key, time=currentTime))
         rd.hset(camp_munsoo_key, updated_time_key, currentTime.strftime(time_format))
+
+# 전날 당일날 두번 알려준다.
+def job_push_camp_reservation_date(): 
+    print("TODO")
     
 if __name__ == "__main__":
     job_push_camp_avail_date()
-    ## 1시간에 한번씩 실행 
+    ## 1시간에 한번씩 캠핑장 예약정보 체크
     schedule.every().hours.do(job_push_camp_avail_date) 
+
+    # 매일 9:30 에 예약일 알림
+    schedule.every().day.at("9:30").do(job_push_camp_reservation_date)
 
     while True: 
         schedule.run_pending() 
