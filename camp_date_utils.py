@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 
+# 이틀 이상 차이날 경우 None 리턴
 def get_reservation_open_between_now(reservation_code: str):
     info_list = reservation_code.split('/')
     open_interval = info_list[0]
@@ -8,7 +9,7 @@ def get_reservation_open_between_now(reservation_code: str):
     if open_interval == 'Y':
         # 예약 간격이 매년일 경우
         return None
-    elif open_interval == 'M': 
+    elif open_interval == 'M':
         # 예약 간격이 매월일 경우
         open_day_str = info_list[1]
         if len(open_day_str) > 0:
@@ -29,45 +30,33 @@ def get_reservation_open_between_now(reservation_code: str):
     elif open_interval == 'W':
         # 예약 간격이 매주일 경우
         open_week = info_list[1]
-        # var weekNum = DateTime.monday;
-        # if (openWeek.isNotEmpty) {
-        #   switch (openWeek) {
-        #     case "MON":
-        #       weekNum = DateTime.monday;
-        #       break;
-        #     case "TUE":
-        #       weekNum = DateTime.tuesday;
-        #       break;
-        #     case "WED":
-        #       weekNum = DateTime.wednesday;
-        #       break;
-        #     case "THU":
-        #       weekNum = DateTime.thursday;
-        #       break;
-        #     case "FRI":
-        #       weekNum = DateTime.friday;
-        #       break;
-        #     case "SAT":
-        #       weekNum = DateTime.saturday;
-        #       break;
-        #     case "SUN":
-        #       weekNum = DateTime.sunday;
-        #       break;
-        #     default:
-        #       break;
-        #   }
+        week_num = weekday_to_num(open_week)
 
-        #   final now = DateTime.now();
-        #   var pivotDate = DateTime(now.year, now.month, now.day);
-        #   pivotDate = pivotDate.add((Duration(days: weekNum - now.weekday)));
-        #   if (now.isAfter(pivotDate)) {
-        #     pivotDate = pivotDate.add(Duration(days: 7));
-        #   }
-        #   return [0, 1, 2, 3].map<DateTime>((index) {
-        #     return pivotDate.add((Duration(days: 7 * index)));
-        #   }).toList();
-        # else:
-        #   print("DateUtill param error!!!")
-        #   return None
+        now = datetime.now()
+        if (week_num == now.weekday):
+            return 0
+        elif (week_num == now.weekday + 1):
+            return 1
+        elif (week_num == now.weekday + 2):
+            return 2
+        else:
+            return None
     else:
         return None
+
+
+def weekday_to_num(weekday: str):
+    if (weekday == 'MON'):
+        return 0
+    elif (weekday == 'TUE'):
+        return 1
+    elif (weekday == 'WED'):
+        return 2
+    elif (weekday == 'THU'):
+        return 3
+    elif (weekday == 'FRI'):
+        return 4
+    elif (weekday == 'SAT'):
+        return 5
+    else:
+        return 6
